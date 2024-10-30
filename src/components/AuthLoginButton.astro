@@ -1,0 +1,34 @@
+---
+
+---
+<auth-login-button>
+  <button aria-label="Login"></button>
+  <span>Click to list available wallets</span>
+</auth-login-button>
+
+<script>
+  import { BrowserWallet } from '@meshsdk/core';
+  // Define the behaviour for our new type of HTML element.
+  class AuthLoginButton extends HTMLElement {
+    connectedCallback() {
+      let count = 0;
+
+      const loginButton = this.querySelector('button');
+      const msg = this.querySelector('span');
+
+      // Each time the button is clicked, update the count.
+      loginButton.addEventListener('click', () => {
+        const availwallets = this.availableWallets()
+        console.log(availwallets)
+        //countSpan.textContent = count.toString();
+      });
+    }
+    async availableWallets() {
+      const wallets = await BrowserWallet.getAvailableWallets()
+      return wallets
+    }
+  }
+
+  // Tell the browser to use our AstroHeart class for <astro-heart> elements.
+  customElements.define('auth-login-button', AuthLoginButton);
+</script>
