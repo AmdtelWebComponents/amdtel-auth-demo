@@ -15,13 +15,14 @@
 
       const loginButton = this.querySelector('button');
       const msg = this.querySelector('span');
-
       // Each time the button is clicked, update the count.
-      loginButton.addEventListener('click', () => {
-        const availwallets = this.availableWallets()
-        console.log(availwallets)
-        //countSpan.textContent = count.toString();
-      });
+      if (loginButton) {
+        loginButton.addEventListener('click', () => {
+          const availwallets = this.availableWallets()
+          console.log(availwallets)
+          //countSpan.textContent = count.toString();
+        });
+      }
     }
     async availableWallets() {
       const wallets = await BrowserWallet.getAvailableWallets()
