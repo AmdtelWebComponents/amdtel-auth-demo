@@ -1,34 +1,75 @@
 ---
-
 ---
 <auth-login-button>
-  <button aria-label="Login"></button>
-  <span>Click to list available wallets</span>
+  <button aria-label="Login">Check Available wallets</button>
+  <span>list available wallets</span>
 </auth-login-button>
 
 <script>
-  import { BrowserWallet } from '@meshsdk/core';
-  // Define the behaviour for our new type of HTML element.
-  class AuthLoginButton extends HTMLElement {
-    connectedCallback() {
-      let count = 0;
-
-      const loginButton = this.querySelector('button');
-      const msg = this.querySelector('span');
-
-      // Each time the button is clicked, update the count.
-      loginButton.addEventListener('click', () => {
-        const availwallets = this.availableWallets()
-        console.log(availwallets)
-        //countSpan.textContent = count.toString();
-      });
-    }
-    async availableWallets() {
-      const wallets = await BrowserWallet.getAvailableWallets()
-      return wallets
+  // Declare the Cardano window type
+  declare global {
+    interface Window {
+      cardano: {
+        [key: string]: {
+          isEnabled: () => Promise<boolean>;
+          [key: string]: any;
+        };
+      };
     }
   }
 
-  // Tell the browser to use our AstroHeart class for <astro-heart> elements.
+  class AuthLoginButton extends HTMLElement {
+    connectedCallback() {
+      const loginButton = this.querySelector('button');
+      const msg = this.querySelector('span');
+
+      // Add null checks for DOM elements
+      if (!loginButton || !msg) {
+        console.error('Required DOM elements not found');
+        return;
+      }
+
+      loginButton.addEventListener('click', async () => {
+        try {
+          const availableWallets = await this.availableWallets();
+          console.log('Available wallets:', availableWallets);
+          msg.textContent = `Found ${availableWallets.length} wallet(s)`;
+        } catch (error) {
+          console.error('Error detecting wallets:', error);
+          msg.textContent = 'Error detecting wallets';
+        }
+      });
+    }
+
+    async availableWallets() {
+      // Check if cardano object exists in window
+      if (typeof window.cardano === 'undefined') {
+        throw new Error('No Cardano wallets found');
+      }
+
+      const wallets = [];
+      
+      // Check for common Cardano wallet providers
+      const walletProviders = ['nami', 'eternl', 'flint', 'yoroi', 'gero'];
+      
+      for (const provider of walletProviders) {
+        if (window.cardano[provider]) {
+          try {
+            const isEnabled = await window.cardano[provider].isEnabled();
+            wallets.push({
+              name: provider,
+              enabled: isEnabled,
+              api: window.cardano[provider]
+            });
+          } catch (error) {
+            console.warn(`Error checking ${provider} wallet:`, error);
+          }
+        }
+      }
+
+      return wallets;
+    }
+  }
+
   customElements.define('auth-login-button', AuthLoginButton);
 </script>
