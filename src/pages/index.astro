@@ -1,5 +1,4 @@
 ---
-import AuthLoginButton from "../components/AuthLoginButton.astro";
 
 ---
 
@@ -9,10 +8,31 @@ import AuthLoginButton from "../components/AuthLoginButton.astro";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Cardano Wallet Demo</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
-		<AuthLoginButton></AuthLoginButton>
+		<h1>Cardano Wallet Integration</h1>
+		<div class="wallet-wrapper">
+			<cardano-wallet-button></cardano-wallet-button>
+		</div>
 	</body>
 </html>
+
+<style>
+	.wallet-wrapper {
+		padding: 1rem;
+		max-width: 600px;
+		margin: 0 auto;
+	}
+
+	h1 {
+		text-align: center;
+		color: #333;
+		margin-bottom: 2rem;
+	}
+</style>
+
+<script>
+	// Ensure the component is loaded on the client side
+	import '../components/CardanoWalletButton.js';
+</script>
